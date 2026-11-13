@@ -1,0 +1,258 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Motion Margin</title>
+    <link rel="stylesheet" href="style.css" />
+    <script type="module" src="app.js"></script>
+  </head>
+  <body>
+    <header>
+      <a href="/">MOTION MARGIN <span>↝</span></a
+      ><span>STATE ESTIMATION / OBSERVATION NOTEBOOK</span
+      ><button id="export">Export evidence</button>
+    </header>
+    <main>
+      <section class="intro">
+        <div>
+          <p>BETWEEN THE MEASUREMENTS</p>
+          <h1>A clearer sense<br />of where things are.</h1>
+        </div>
+        <div class="intro-note">
+          A noisy reading is a clue, not a location.<br />Compare what you knew
+          then<br />with what you can infer now.
+        </div>
+      </section>
+      <section class="workspace">
+        <div class="plot-area">
+          <div class="plot-toolbar">
+            <label
+              >State<select id="dimension">
+                <option value="0">Position</option>
+                <option value="1">Velocity</option>
+              </select></label
+            ><label
+              >Uncertainty band<select id="band">
+                <option value="smoothed">Smoothed · offline</option>
+                <option value="filtered">Filtered · causal</option>
+                <option value="none">None</option>
+              </select></label
+            ><button id="svg">Save chart</button>
+          </div>
+          <svg
+            id="chart"
+            viewBox="0 0 1000 520"
+            tabindex="0"
+            role="img"
+            aria-label="Estimated trajectory; arrow keys inspect observations"
+          ></svg>
+          <div class="legend">
+            <span class="filtered">━━ Filtered</span
+            ><span class="smoothed">━━ Smoothed</span
+            ><span>┄┄ Truth, when supplied</span><span>○ Reading</span
+            ><span class="gated">× Gated outlier</span>
+          </div>
+          <div class="scrub">
+            <button id="previous" aria-label="Previous observation">←</button
+            ><input
+              id="step"
+              type="range"
+              min="0"
+              max="99"
+              value="40"
+              aria-label="Observation index"
+            /><button id="next" aria-label="Next observation">→</button
+            ><output id="step-label"></output>
+          </div>
+        </div>
+        <aside>
+          <p class="small">INSPECT THE OBSERVATION</p>
+          <h2 id="time"></h2>
+          <span id="classification"></span>
+          <dl id="detail"></dl>
+          <form id="edit-point">
+            <label
+              >Position reading<input
+                id="measurement"
+                type="number"
+                step="any"
+                min="-100000"
+                max="100000" /></label
+            ><label class="check"
+              ><input id="missing" type="checkbox" /> Measurement missing</label
+            ><button>Apply reading</button>
+          </form>
+          <button id="undo" disabled>Undo edit</button>
+        </aside>
+      </section>
+      <p id="status" role="status"></p>
+      <p id="error" role="alert"></p>
+      <section class="scores">
+        <div>
+          <span>ACCEPTED / GATED / MISSING</span><strong id="counts"></strong>
+        </div>
+        <div>
+          <span>FILTERED POSITION RMSE</span><strong id="filter-score"></strong>
+        </div>
+        <div>
+          <span>SMOOTHED POSITION RMSE</span><strong id="smooth-score"></strong>
+        </div>
+        <div><span>MEAN PRE-GATE NIS</span><strong id="nis"></strong></div>
+      </section>
+      <p class="score-note" id="coverage"></p>
+      <section class="settings">
+        <form id="settings-form">
+          <h2>Set the model.</h2>
+          <div class="parameters">
+            <label
+              >Process intensity q<input
+                id="q"
+                type="number"
+                min="0.001"
+                max="100"
+                step="any"
+                required /></label
+            ><label
+              >Measurement variance R<input
+                id="r"
+                type="number"
+                min="0.001"
+                max="10000"
+                step="any"
+                required /></label
+            ><label
+              >NIS gate · 0 disables<input
+                id="gate"
+                type="number"
+                min="0"
+                max="1000"
+                step="any"
+                required
+            /></label>
+          </div>
+          <details>
+            <summary>Initial state and uncertainty</summary>
+            <div class="parameters">
+              <label
+                >Position<input
+                  id="position"
+                  type="number"
+                  min="-100000"
+                  max="100000"
+                  step="any"
+                  required /></label
+              ><label
+                >Velocity<input
+                  id="velocity"
+                  type="number"
+                  min="-10000"
+                  max="10000"
+                  step="any"
+                  required /></label
+              ><label
+                >Position variance<input
+                  id="positionVariance"
+                  type="number"
+                  min="0.001"
+                  max="10000"
+                  step="any"
+                  required /></label
+              ><label
+                >Velocity variance<input
+                  id="velocityVariance"
+                  type="number"
+                  min="0.001"
+                  max="10000"
+                  step="any"
+                  required
+              /></label>
+            </div>
+          </details>
+          <details>
+            <summary>Observations and optional reference truth</summary>
+            <p>
+              JSON rows: {"t": 0, "z": 1.2, "truth": [position, velocity]}. Use
+              null for missing z; omit truth when unknown. Times increase by
+              0.1–10 units.
+            </p>
+            <textarea
+              id="observations"
+              rows="14"
+              spellcheck="false"
+              aria-label="Observation JSON"
+            ></textarea>
+          </details>
+          <div class="actions">
+            <button type="submit">Estimate trajectory ↗</button
+            ><button type="button" id="example">Use example</button
+            ><button type="button" id="save">Save study</button
+            ><button type="button" id="open">Open study</button
+            ><input
+              hidden
+              id="file"
+              type="file"
+              accept=".json,application/json"
+            />
+          </div>
+        </form>
+        <div class="notes">
+          <h2>Past and future.</h2>
+          <p>
+            The filter uses only observations available at each time. The
+            smoother makes a second, backward pass using later observations. Its
+            narrower uncertainty is retrospective, not a forecasting advantage.
+          </p>
+          <details>
+            <summary>Dynamics and covariance</summary>
+            <p>
+              State is [position, velocity], with F = [[1, Δt], [0, 1]].
+              Continuous white acceleration has Q = q[[Δt³/3, Δt²/2], [Δt²/2,
+              Δt]]. Position is observed with variance R. The prior applies at
+              the first observation time.
+            </p>
+            <p>
+              Accepted readings use a Joseph-form covariance update. Missing and
+              gated readings skip measurement correction. Rauch–Tung–Striebel
+              smoothing works backward over the accepted measurement set.
+              Matrices are checked for finite, positive-definite covariance.
+            </p>
+          </details>
+          <details>
+            <summary>What the bands mean</summary>
+            <p>
+              Bands show marginal mean ± 1.96 model standard deviations. They
+              rely on the supplied linear Gaussian model. Gating selects
+              observations based on their values, so these bands do not account
+              for the selection event and are not guaranteed 95% coverage after
+              outlier rejection.
+            </p>
+            <p>
+              NIS is squared innovation divided by predicted measurement
+              variance, computed before gating. Its displayed average includes
+              rejected readings and excludes missing ones. RMSE and empirical
+              position-band coverage use only supplied reference truth; those
+              fields are unavailable without truth.
+            </p>
+          </details>
+          <details>
+            <summary>Bounds and reproducibility</summary>
+            <p>
+              2–500 observations, timestamps 0–1,000,000, successive gaps
+              0.1–10. Source JSON is limited to 200 KB. Processing is
+              deterministic and local. Exports include every prediction, update,
+              covariance, innovation, smoothing gain, and result. This is a
+              one-dimensional motion model, not a tracking system for live
+              hardware.
+            </p>
+          </details>
+        </div>
+      </section>
+    </main>
+    <footer>
+      Motion Margin / A little uncertainty, made visible.<span
+        >Local arithmetic · reproducible studies</span
+      >
+    </footer>
+  </body>
+</html>
