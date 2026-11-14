@@ -4,6 +4,8 @@ A local state-estimation notebook for noisy one-dimensional motion. Compare caus
 
 ![Trajectory notebook](docs/workbench.png)
 
+The full-width trajectory chart keeps observation details in a strip below the plot. Filtered and smoothed markers follow the inspection cursor without redrawing the trajectories; model changes reveal the new curves. Reduced-motion preferences disable these transitions.
+
 ## Run
 
 Python 3.10+ serves the static app. Node 22+ runs checks. No packages, build step, accounts, or external services.

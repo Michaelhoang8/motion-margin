@@ -9,21 +9,10 @@
   </head>
   <body>
     <header>
-      <a href="/">MOTION MARGIN <span>↝</span></a
-      ><span>STATE ESTIMATION / OBSERVATION NOTEBOOK</span
-      ><button id="export">Export evidence</button>
+      <h1>Motion Margin</h1>
+      <button id="export">Export evidence</button>
     </header>
     <main>
-      <section class="intro">
-        <div>
-          <p>BETWEEN THE MEASUREMENTS</p>
-          <h1>A clearer sense<br />of where things are.</h1>
-        </div>
-        <div class="intro-note">
-          A noisy reading is a clue, not a location.<br />Compare what you knew
-          then<br />with what you can infer now.
-        </div>
-      </section>
       <section class="workspace">
         <div class="plot-area">
           <div class="plot-toolbar">
@@ -67,23 +56,28 @@
           </div>
         </div>
         <aside>
-          <p class="small">INSPECT THE OBSERVATION</p>
-          <h2 id="time"></h2>
-          <span id="classification"></span>
+          <div class="observation-heading">
+            <p class="small">INSPECT THE OBSERVATION</p>
+            <h2 id="time"></h2>
+            <span id="classification"></span>
+          </div>
           <dl id="detail"></dl>
-          <form id="edit-point">
-            <label
-              >Position reading<input
-                id="measurement"
-                type="number"
-                step="any"
-                min="-100000"
-                max="100000" /></label
-            ><label class="check"
-              ><input id="missing" type="checkbox" /> Measurement missing</label
-            ><button>Apply reading</button>
-          </form>
-          <button id="undo" disabled>Undo edit</button>
+          <div class="reading-edit">
+            <form id="edit-point">
+              <label
+                >Position reading<input
+                  id="measurement"
+                  type="number"
+                  step="any"
+                  min="-100000"
+                  max="100000" /></label
+              ><label class="check"
+                ><input id="missing" type="checkbox" /> Measurement
+                missing</label
+              ><button>Apply reading</button>
+            </form>
+            <button id="undo" disabled>Undo edit</button>
+          </div>
         </aside>
       </section>
       <p id="status" role="status"></p>
@@ -103,7 +97,7 @@
       <p class="score-note" id="coverage"></p>
       <section class="settings">
         <form id="settings-form">
-          <h2>Set the model.</h2>
+          <h2>Model parameters</h2>
           <div class="parameters">
             <label
               >Process intensity q<input
@@ -184,7 +178,7 @@
             ></textarea>
           </details>
           <div class="actions">
-            <button type="submit">Estimate trajectory ↗</button
+            <button type="submit">Estimate trajectory</button
             ><button type="button" id="example">Use example</button
             ><button type="button" id="save">Save study</button
             ><button type="button" id="open">Open study</button
@@ -197,7 +191,7 @@
           </div>
         </form>
         <div class="notes">
-          <h2>Past and future.</h2>
+          <h2>Filter and smoother</h2>
           <p>
             The filter uses only observations available at each time. The
             smoother makes a second, backward pass using later observations. Its
@@ -249,10 +243,5 @@
         </div>
       </section>
     </main>
-    <footer>
-      Motion Margin / A little uncertainty, made visible.<span
-        >Local arithmetic · reproducible studies</span
-      >
-    </footer>
   </body>
 </html>

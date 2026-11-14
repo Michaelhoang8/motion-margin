@@ -27,11 +27,32 @@ function controls() {
   $("previous").disabled = index === 0;
   $("next").disabled = index === result.rows.length - 1;
 }
+let drawnResult, drawnDimension, drawnBand, plotX, plotY;
+function cursor() {
+  const selected = result.rows[index],
+    d = Number($("dimension").value);
+  $("chart").querySelector(".cursor").style.transform =
+    `translateX(${plotX(selected.t)}px)`;
+  for (const method of ["filtered", "smoothed"])
+    $("chart").querySelector(`.marker-${method}`).style.transform =
+      `translate(${plotX(selected.t)}px, ${plotY(selected[method][d])}px)`;
+}
 function draw() {
   const dimension = Number($("dimension").value),
     band = $("band").value,
     rows = result.rows,
     svg = $("chart");
+  if (
+    drawnResult === result &&
+    drawnDimension === dimension &&
+    drawnBand === band
+  ) {
+    cursor();
+    return;
+  }
+  drawnResult = result;
+  drawnDimension = dimension;
+  drawnBand = band;
   svg.replaceChildren();
   const values = [];
   for (const r of rows) {
@@ -54,6 +75,8 @@ function draw() {
     X = (t) => 75 + ((t - start) / (end - start)) * 885,
     Y = (v) => 455 - ((v - lo) / (hi - lo)) * 420;
   plotScale = { start, end };
+  plotX = X;
+  plotY = Y;
   for (let i = 0; i <= 5; i++) {
     const y = 35 + i * 84,
       value = hi - ((hi - lo) * i) / 5;
@@ -128,16 +151,32 @@ function draw() {
             : el("circle", { cx: x, cy: y, r: 2.6, class: "observation" }),
         );
       }
-  const selected = rows[index];
-  svg.append(
-    el("line", {
-      x1: X(selected.t),
-      x2: X(selected.t),
-      y1: 30,
-      y2: 460,
-      class: "cursor",
-    }),
-  );
+  svg.append(el("line", { x1: 0, x2: 0, y1: 30, y2: 460, class: "cursor" }));
+  for (const method of ["filtered", "smoothed"])
+    svg.append(
+      el("circle", {
+        cx: 0,
+        cy: 0,
+        r: 5,
+        class: `marker-${method}`,
+        fill: method === "filtered" ? "#4c748d" : "#be8155",
+        stroke: "#fff",
+        "stroke-width": 2,
+      }),
+    );
+  cursor();
+  if (!matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    for (const curve of svg.querySelectorAll("path.filtered, path.smoothed")) {
+      const length = curve.getTotalLength();
+      curve.animate(
+        [
+          { strokeDasharray: `${length} ${length}`, strokeDashoffset: length },
+          { strokeDasharray: `${length} ${length}`, strokeDashoffset: 0 },
+        ],
+        { duration: 650, easing: "ease-out" },
+      );
+    }
+  }
 }
 function inspect() {
   const r = result.rows[index],

@@ -430,3 +430,329 @@ footer {
     flex-wrap: wrap;
   }
 }
+/* Trajectory-first workspace. */
+:root {
+  background: #f7f8fa;
+  color: #324454;
+  --line: #dce3e9;
+}
+header {
+  background: #fff;
+  padding: 24px 3vw;
+}
+header h1 {
+  font:
+    500 25px Arial,
+    sans-serif;
+  letter-spacing: -0.8px;
+  margin: 0;
+}
+main {
+  padding: 28px 3vw 40px;
+  max-width: 1560px;
+}
+.workspace {
+  display: block;
+  background: none;
+  border: 0;
+  overflow: visible;
+  animation: none;
+}
+.plot-area {
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  box-shadow: 0 12px 30px #20374806;
+}
+.plot-toolbar {
+  border-bottom: 1px solid #edf1f5;
+  padding: 18px 26px;
+}
+#chart {
+  background: linear-gradient(#fff, #fafcfe);
+  aspect-ratio: 1000/520;
+}
+#chart .grid {
+  stroke: #e5ebf0;
+}
+#chart .filtered {
+  stroke-width: 2.2;
+}
+#chart .smoothed {
+  stroke-width: 2.5;
+}
+#chart .cursor {
+  stroke: #748b9f;
+  stroke-width: 1;
+  transition: transform 0.22s;
+}
+#chart .marker-filtered,
+#chart .marker-smoothed {
+  transition: transform 0.22s;
+  filter: drop-shadow(0 1px 3px #2b425533);
+}
+#chart text {
+  fill: #73889a;
+  font: 10px monospace;
+}
+.legend {
+  padding: 15px 26px 0;
+  color: #758a97;
+}
+.scrub {
+  padding: 18px 26px 24px;
+}
+aside {
+  display: grid;
+  grid-template-columns: 170px minmax(0, 1fr) 240px;
+  gap: 26px;
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  background: #fff;
+  margin-top: 20px;
+  padding: 24px 26px;
+  align-items: start;
+}
+.small {
+  font-size: 9px;
+  letter-spacing: 0.7px;
+  color: #7f91a0;
+  margin-top: 0;
+}
+aside h2 {
+  font: 28px monospace;
+  letter-spacing: -1px;
+  color: #4c748d;
+  margin: 18px 0 12px;
+}
+#classification {
+  display: inline-block;
+  padding: 6px 8px;
+  background: #f6e9dd;
+  color: #9d6740;
+  border-radius: 3px;
+  font-size: 9px;
+}
+aside dl {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px 24px;
+  margin: 0;
+  padding: 0 26px;
+  border-left: 1px solid var(--line);
+  border-right: 1px solid var(--line);
+}
+dl div {
+  display: block;
+  margin: 0;
+}
+dt {
+  font-size: 10px;
+  color: #81909c;
+}
+dd {
+  text-align: left;
+  font: 16px monospace;
+  color: #40576a;
+  margin-top: 7px;
+}
+aside form {
+  border: 0;
+  padding: 0;
+}
+aside label {
+  font-size: 10px;
+}
+aside button {
+  padding: 8px 10px;
+  font-size: 11px;
+}
+.reading-edit #undo {
+  background: transparent;
+  margin-top: 7px;
+}
+.scores {
+  border: 0;
+  gap: 30px;
+  padding: 22px 0 15px;
+}
+.scores > div {
+  padding-left: 18px;
+  border-left: 2px solid #dce5ec;
+}
+.scores > div:first-child {
+  border-color: #bf8358;
+}
+.scores strong {
+  font: 28px monospace;
+  color: #506b80;
+}
+.scores span {
+  font: 9px monospace;
+  color: #7a8e9d;
+  letter-spacing: 0;
+}
+.score-note {
+  color: #7a8c99;
+  line-height: 1.7;
+}
+#status {
+  color: #7b8d9b;
+  font-size: 11px;
+}
+#error:empty {
+  display: none;
+}
+.settings {
+  border-top: 1px solid var(--line);
+  padding-top: 30px;
+}
+.settings h2 {
+  font: 21px Arial;
+}
+.settings p {
+  color: #728695;
+}
+.settings input,
+.settings textarea {
+  background: #fff;
+}
+.parameters {
+  gap: 18px;
+}
+.settings > form,
+.notes {
+  min-width: 0;
+}
+button {
+  transition:
+    background 0.2s,
+    border-color 0.2s;
+}
+button:hover {
+  background: #eef3f7;
+}
+@media (max-width: 1000px) {
+  aside {
+    grid-template-columns: 130px minmax(0, 1fr);
+  }
+  .reading-edit {
+    grid-column: 1/-1;
+    display: flex;
+    gap: 12px;
+    align-items: end;
+  }
+  .reading-edit form {
+    display: flex;
+    gap: 15px;
+    align-items: end;
+    flex: 1;
+  }
+  .reading-edit form > label:first-child {
+    flex: 1;
+  }
+  .reading-edit input {
+    margin-bottom: 0;
+  }
+  .reading-edit button {
+    width: auto;
+    flex: none;
+  }
+  .reading-edit .check {
+    margin-bottom: 9px;
+  }
+  .reading-edit #undo {
+    margin-bottom: 0;
+  }
+  aside dl {
+    border-right: 0;
+  }
+  .settings {
+    grid-template-columns: 1fr;
+  }
+}
+@media (max-width: 600px) {
+  main {
+    padding: 18px 4vw 30px;
+  }
+  .plot-toolbar {
+    padding: 16px;
+    gap: 12px;
+  }
+  .plot-toolbar label {
+    flex-wrap: wrap;
+    gap: 5px;
+  }
+  .plot-toolbar label select {
+    margin: 0;
+  }
+  .legend {
+    padding: 12px 16px;
+    font-size: 9px;
+  }
+  .scrub {
+    padding: 14px 16px;
+    gap: 8px;
+  }
+  .scrub button {
+    padding: 8px;
+  }
+  aside {
+    grid-template-columns: 1fr;
+    padding: 20px;
+    gap: 20px;
+  }
+  .observation-heading {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .observation-heading .small {
+    width: 100%;
+    margin: 0;
+  }
+  aside h2 {
+    margin: 0;
+  }
+  aside dl {
+    border: 0;
+    padding: 0;
+  }
+  .reading-edit {
+    display: block;
+  }
+  .reading-edit form {
+    display: block;
+  }
+  .reading-edit .check {
+    margin: 14px 0;
+  }
+  .reading-edit button {
+    width: 100%;
+  }
+  .reading-edit #undo {
+    margin-top: 8px;
+  }
+  .scores {
+    grid-template-columns: 1fr 1fr;
+    gap: 24px 12px;
+  }
+  .scores strong {
+    font-size: 22px;
+  }
+  .scores > div {
+    padding-left: 10px;
+  }
+  .score-note {
+    font-size: 10px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *:before,
+  *:after {
+    animation: none !important;
+    transition: none !important;
+  }
+}
